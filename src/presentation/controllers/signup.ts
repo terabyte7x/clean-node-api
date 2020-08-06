@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { IHttpRequest, IHttpResponse } from '../protocols/IHttp'
 import { MissingParamError } from '../errors/missing-param-error'
-import { badRequest } from '../helpers/http-helper'
+import { badRequest, serverError } from '../helpers/http-helper'
 import { IController } from '../protocols/IController'
 import { IEmailValidator } from '../protocols/IEmailValidator'
 import { InvalidParamError } from '../errors/invalid-param-error'
@@ -28,10 +28,7 @@ export class SignUpController implements IController {
         return badRequest(new InvalidParamError('email'))
       }
     } catch (error) {
-      return {
-        statusCode: 500,
-        body: new ServerError()
-      }
+      return serverError()
     }
   }
 }
