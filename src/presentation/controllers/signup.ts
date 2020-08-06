@@ -12,7 +12,7 @@ export class SignUpController implements IController {
 
   handle (httpRequest: IHttpRequest):IHttpResponse {
     try {
-      const requiredFields = ['name', 'email', 'password', 'passwordConfirm']
+      const requiredFields = ['name', 'email', 'password', 'passwordConfir']
 
       for (const field of requiredFields) {
         if (!httpRequest.body[field]) {
