@@ -1,9 +1,7 @@
 /* eslint-disable no-unused-vars */
-import { IHttpRequest, IHttpResponse } from '../protocols/IHttp'
+import { IHttpRequest, IHttpResponse, IController, IEmailValidator } from '../protocols/'
 import { MissingParamError, InvalidParamError } from '../errors'
 import { badRequest, serverError } from '../helpers/http-helper'
-import { IController } from '../protocols/IController'
-import { IEmailValidator } from '../protocols/IEmailValidator'
 
 export class SignUpController implements IController {
   private readonly emailValidator: IEmailValidator
