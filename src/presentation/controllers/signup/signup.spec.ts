@@ -1,10 +1,8 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-unused-vars */
 import { SignUpController } from './signup'
-import { MissingParamError, InvalidParamError, ServerError } from '../errors'
-import { IEmailValidator } from '../protocols/IEmailValidator'
-import { AddAccountModel, IAddAccount } from 'src/domain/useCases/add-account'
-import { AccountModel } from 'src/domain/models/account'
+import { MissingParamError, InvalidParamError, ServerError } from '../../errors'
+import { IEmailValidator, AddAccountModel, IAddAccount, AccountModel } from './signup-protocols'
 
 interface SutTypes {
   sut: SignUpController
