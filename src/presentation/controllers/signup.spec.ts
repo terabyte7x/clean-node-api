@@ -1,11 +1,15 @@
+/* eslint-disable new-cap */
 /* eslint-disable no-unused-vars */
 import { SignUpController } from './signup'
 import { MissingParamError, InvalidParamError, ServerError } from '../errors'
 import { IEmailValidator } from '../protocols/IEmailValidator'
+import { AddAccountModel, IAddAccount } from 'src/domain/useCases/add-account'
+import { AccountModel } from 'src/domain/models/account'
 
 interface SutTypes {
   sut: SignUpController
   emailValidatorStub: IEmailValidator
+  addAccountStub: IAddAccount
 }
 
 const makeEmailValidator = (): IEmailValidator => {
@@ -15,6 +19,21 @@ const makeEmailValidator = (): IEmailValidator => {
     }
   }
   return new EmailValidatorStub()
+}
+
+const makeAddAccount = (): IAddAccount => {
+  class addAccountStub implements IAddAccount {
+    add (account: AddAccountModel): AccountModel {
+      const fakeAccount = {
+        id: 'valid_id',
+        name: 'valid_name',
+        email: 'valid_email@email.com',
+        password: 'valid_password'
+      }
+      return fakeAccount
+    }
+  }
+  return new addAccountStub()
 }
 
 const makeEmailValidatorWithError = (): IEmailValidator => {
@@ -29,9 +48,11 @@ const makeEmailValidatorWithError = (): IEmailValidator => {
 const makeSut = (): SutTypes => {
   // Stub, Spy, Double, Fake
   const emailValidatorStub = makeEmailValidator()
-  const sut = new SignUpController(emailValidatorStub)
+  const addAccountStub = makeAddAccount()
+  const sut = new SignUpController(emailValidatorStub, addAccountStub)
   return {
     sut,
+    addAccountStub,
     emailValidatorStub
   }
 }
@@ -155,7 +176,9 @@ describe('Sign Up Controller', () => {
   test('Should return 500 if EmailValidator throws', () => {
     const emailValidatorStub = makeEmailValidatorWithError()
 
-    const sut = new SignUpController(emailValidatorStub)
+    const { addAccountStub } = makeSut()
+
+    const sut = new SignUpController(emailValidatorStub, addAccountStub)
 
     const httpRequest = {
       body: {
@@ -168,5 +191,27 @@ describe('Sign Up Controller', () => {
     const httpResponse = sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('Should call AddAccount with correct values', () => {
+    // SUT = System Under Test
+    const { sut, addAccountStub } = makeSut()
+
+    const addSpy = jest.spyOn(addAccountStub, 'add')
+
+    const httpRequest = {
+      body: {
+        name: '_any_name',
+        email: 'any_valid_email@mail.com',
+        password: '_any_password',
+        passwordConfirm: '_any_password'
+      }
+    }
+    sut.handle(httpRequest)
+    expect(addSpy).toHaveBeenCalledWith({
+      name: '_any_name',
+      email: 'any_valid_email@mail.com',
+      password: '_any_password'
+    })
   })
 })
