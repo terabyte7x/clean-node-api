@@ -2,12 +2,15 @@
 import { IHttpRequest, IHttpResponse, IController, IEmailValidator } from '../protocols/'
 import { MissingParamError, InvalidParamError } from '../errors'
 import { badRequest, serverError } from '../helpers/http-helper'
+import { IAddAccount } from 'src/domain/useCases/add-account'
 
 export class SignUpController implements IController {
   private readonly emailValidator: IEmailValidator
+  private readonly addAccount: IAddAccount
 
-  constructor (emailValidator: IEmailValidator) {
+  constructor (emailValidator: IEmailValidator, addAccount: IAddAccount) {
     this.emailValidator = emailValidator
+    this.addAccount = addAccount
   }
 
   handle (httpRequest: IHttpRequest):IHttpResponse {
@@ -29,6 +32,7 @@ export class SignUpController implements IController {
       if (!isValid) {
         return badRequest(new InvalidParamError('email'))
       }
+      this.addAccount.add({ name, email, password })
     } catch (error) {
       return serverError()
     }
