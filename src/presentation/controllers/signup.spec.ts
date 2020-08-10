@@ -99,6 +99,22 @@ describe('Sign Up Controller', () => {
     expect(httpResponse.body).toEqual(new MissingParamError('passwordConfirm'))
   })
 
+  test('Should return 400 if password confirmation fails', () => {
+    // SUT = System Under Test
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        name: '_any_name',
+        email: '_any_email',
+        password: '_any_password',
+        passwordConfirm: 'invalid_password'
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new InvalidParamError('passwordConfirm'))
+  })
+
   test('Should return 400 if an invalid email is provided', () => {
     // SUT = System Under Test
     const { sut, emailValidatorStub } = makeSut()
@@ -109,7 +125,7 @@ describe('Sign Up Controller', () => {
       body: {
         name: '_any_name',
         email: 'invalid_email@mail.com',
-        password: 'any_password',
+        password: '_any_password',
         passwordConfirm: '_any_password'
       }
     }
@@ -128,7 +144,7 @@ describe('Sign Up Controller', () => {
       body: {
         name: '_any_name',
         email: 'any_invalid_email@mail.com',
-        password: 'any_password',
+        password: '_any_password',
         passwordConfirm: '_any_password'
       }
     }
@@ -145,7 +161,7 @@ describe('Sign Up Controller', () => {
       body: {
         name: '_any_name',
         email: 'invalid_email@mail.com',
-        password: 'any_password',
+        password: '_any_password',
         passwordConfirm: '_any_password'
       }
     }
